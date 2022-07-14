@@ -26,7 +26,7 @@ build_url=$(printf "%s" "$show_page?&sid=${sid}&sec=${sec}"|
 url=$(curl -sL "$build_url")
 
 # get the last season of the show
-last_season=$(printf "%s" "$url"|tail -r|grep -m1 "season: '"|
+last_season=$(printf "%s" "$url"|sed '1!G;h;$!d'|grep -m1 "season: '"|
   sed -En "s@.*season: '([0-9]*)'.*@\1@p")
 
 # TODO: simplify this
@@ -41,10 +41,10 @@ fi
 
 # depending on the season, get the last episode of the season
 if [ "$season" -eq "$last_season" ]; then
-  last_episode=$(printf "%s" "$url"|tail -r|grep -m1 "episode: '"|
+  last_episode=$(printf "%s" "$url"|sed '1!G;h;$!d'|grep -m1 "episode: '"|
     sed -En "s@.*episode: '([0-9]*)'.*@\1@p")
 else
-  last_episode=$(printf "%s" "$url"|tail -r|grep -m1 -A5 "season: '$season'"|
+  last_episode=$(printf "%s" "$url"|sed '1!G;h;$!d'|grep -m1 -A5 "season: '$season'"|
     sed -En "s@.*episode: '([0-9]*)'.*@\1@p")
 fi
 
