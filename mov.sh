@@ -5,11 +5,12 @@ base="https://lookmovie2.to"
 
 [ -z "$*" ] && printf "Enter a Movie name: " && read -r query || query=$*
 query=$(printf "%s" "$query"|tr " " "+")
-show_page="$base"$(curl -s "https://lookmovie2.to/movies/search/?q=$query"|tr -d "\n"|grep -Eo '<h6>.+?</a>'|
-  sed -En 's_.*href="([^"]*)">(.*)</a>_\1\2_p'|fzf --height=8 --with-nth 2..|cut -d' ' -f1)
+show_page="$base"$(curl -s "https://lookmovie2.to/movies/search/?q=${query}"|sed -n "/<h6>/{n;p;n;p;}"|
+  sed 'N;s/\n/,/'|sed -En 's_.*href="([^"]*)">,(.*)</a>_\1\2_p'|fzf --height=8 --with-nth 2..|cut -d' ' -f1)
 
 sid="o0d77am4jdpgd10h013pehetm4"
-build_url=$(printf "%s" "$show_page?&sid=${sid}"|
+sec="2fd5b1a1475fe2a87b0c2471d9af4c41725cea7c"
+build_url=$(printf "%s" "$show_page?mid=17&sid=${sid}&sec=${sec}&t=1657872496"|
   sed 's_.*view/_https://playerwatchlm10.xyz/movies/play/_g')
 url=$(curl -sL "$build_url")
 
