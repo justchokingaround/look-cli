@@ -25,7 +25,7 @@ high_quality="$(printf "%s" "$links_url"|sed -En 's_"1080p":"([^"]*)"_\1_p')"
 
 # only the first 4 english subs, otherwise mpv will take forever to load
 subs=$(printf "%s" "$links_url"|sed -En 's_"file":"([^"]*)"_\1_p'|grep -m4 "en"|
-  sed -e "s_^_${base}_g" -e 's/:/\\:/g'|tr "\n" ":"|sed 's/:$//')
+  sed -e "s_^_${base}_g" -e 's/:/\\:/g' -e 'H;1h;$!d;x;y/\n/:/' -e 's/:$//')
 
 [ -z "$high_quality" ] && [ -z "$medium_quality" ] && [ -z "$low_quality" ] && printf "No links found\n" && exit 1
 [ -z "$high_quality" ] && [ -z "$medium_quality" ] && mpv --sub-files="$subs" --force-media-title="$title" "$low_quality"
