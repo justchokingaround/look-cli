@@ -40,6 +40,7 @@ printf "You chose season %s, episode %s\n" "$season" "$episode"
 id=$(printf "%s" "$url"|tr -d "\n"|tr -d "[:space:]"|sed -En "s@.*episode:'$episode',id_episode:([0-9]*),season:'$season'.*@\1@p")
 hash=$(printf "%s" "$url"|sed -En "s_.*hash: '([^']*)'.*_\1_p")
 expires=$(printf "%s" "$url"|grep "expires"|sed 's/[^0-9]//g')
+title=$(printf "%s" "$url"|sed -En "s_.*title: '([^']*)',.*_\1_p"|head -n1)
 links_url=$(curl -s "https://playerwatchlm09.xyz/api/v1/security/episode-access?id_episode=${id}&hash=${hash}&expires=${expires}"|tr "{|}|," "\n")
 
 low_quality="$(printf "%s" "$links_url"|sed -En 's_"480":"([^"]*)"_\1_p'))"
@@ -50,7 +51,7 @@ high_quality="$(printf "%s" "$links_url"|sed -En 's_"1080":"([^"]*)"_\1_p')"
 subs=$(printf "%s" "$links_url"|sed -En 's_"file":"([^"]*)"_\1_p'|grep -m4 "en"|sed -e "s_^_${base}_g" -e 's/:/\\:/g'|tr "\n" ":"|sed 's/:$//')
 
 [ -z "$high_quality" ] && [ -z "$medium_quality" ] && [ -z "$low_quality" ] && printf "No links found\n" && exit 1
-[ -z "$high_quality" ] && [ -z "$medium_quality" ] && mpv --sub-files="$subs" "$low_quality"
-[ -z "$high_quality" ] && mpv --sub-files="$subs" "$medium_quality"
-[ -n "$high_quality" ] && mpv --sub-files="$subs" "$high_quality"
+[ -z "$high_quality" ] && [ -z "$medium_quality" ] && mpv --sub-files="$subs" --force-media-title="$title S${season} EP${episode}" "$low_quality"
+[ -z "$high_quality" ] && mpv --sub-files="$subs" --force-media-title="$title S${season} EP${episode}" "$medium_quality"
+[ -n "$high_quality" ] && mpv --sub-files="$subs" --force-media-title="$title S${season} EP${episode}" "$high_quality"
 
