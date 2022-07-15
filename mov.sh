@@ -20,8 +20,7 @@ show_page="$base"$(curl -s "https://lookmovie2.to/movies/search/?q=$query"|tr -d
 ###### CAPTCHA STUFF ######
 
 sid="o0d77am4jdpgd10h013pehetm4"
-sec="11080afefff5790eb362a86bfb714e2e4e111b8a"
-build_url=$(printf "%s" "$show_page?&sid=${sid}&sec=${sec}"|
+build_url=$(printf "%s" "$show_page?&sid=${sid}"|
   sed 's_.*view/_https://playerwatchlm10.xyz/movies/play/_g')
 url=$(curl -sL "$build_url")
 
